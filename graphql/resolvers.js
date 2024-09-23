@@ -1,13 +1,16 @@
 import { GraphQLError } from 'graphql';
 import db from '../_db.js';
+import Game from '../models/Game.js';
 
 export const resolvers = {
     Query: {
-        games() {
-            return db.games;
+        games: async () => {
+            let allGames = await Game.find({});
+
+            return allGames;
         },
-        gameById(_, args) {
-            let game = db.games.find((game) => game.id == args.id);
+        gameById: async (_, args) => {
+            let game = await Game.findById(args.id);
 
             if (game === undefined || game === null) {
                 throw new GraphQLError('Game not found', {
@@ -69,11 +72,6 @@ export const resolvers = {
             return db.reviews.filter((review) => review.game_id === parent.id);
         }
     },
-    // Author: {
-    //     reviews(parent) {
-    //         return db.reviews.filter((review) => review.author_id === parent.id);
-    //     }
-    // },
     Review: {
         game(parent) {
             return db.games.find((game) => game.id === parent.game_id);
@@ -83,10 +81,11 @@ export const resolvers = {
         }
     },
     Mutation: {
-        deleteGame(_, args) {
-            let deleteGame = db.games.find((game) => game.id === args.id);
-            if (deleteGame === undefined || deleteGame === null) {
-                throw new GraphQLError(`Game with Id ${args.id} not found!`, {
+        deleteGame: async (_, args) => {
+            let game = await Game.findById(args.id);
+
+            if (game === undefined || game === null) {
+                throw new GraphQLError(`Game not found!`, {
                     path: 'deleteGame',
                     extensions: {
                         code: "NOT_FOUND",
@@ -97,18 +96,33 @@ export const resolvers = {
                 });
             }
 
-            db.games = db.games.filter((game) => game.id !== args.id);
-            return db.games;
+            await Game.deleteOne({ _id: args.id });
+
+            return await Game.find({});
         },
-        addGame(_, args) {
-            let newGame = {
-                ...args.newGame,
-                id: Math.floor(Math.random() * 10000).toString()
-            };
+        addGame: async (_, args) => {
+            try {
+                let newGame = await Game.create(
+                    {
+                        title: args.newGame.title,
+                        platform: args.newGame.platform
+                    }
+                );
 
-            db.games.push(newGame);
+                await newGame.save();
 
-            return newGame;
+                return newGame;
+            } catch (error) {
+                throw new GraphQLError('Error adding game', {
+                    path: 'addGame',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
         },
         updateGame(_, args) {
             let editGame = db.games.find((game) => game.id === args.id);
