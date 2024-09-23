@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import db from './_db.js';
+import db from '../_db.js';
 
 export const resolvers = {
     Query: {
