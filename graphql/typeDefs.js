@@ -38,42 +38,42 @@ export const typeDefs = `#graphql
     }
 
     type Mutation {
-        registerNewUser(newUser: NewUser!): User
-        addGame(newGame: NewGame!): Game
-        updateGame(id: ID!, editGame: EditGame!): Game
+        registerNewUser(newUser: NewUserInput!): User
+        addGame(newGame: NewGameInput!): Game
+        updateGame(id: ID!, editGame: EditGameInput!): Game
         deleteGame(id: ID!): [Game]
-        addAuthor(author: NewAuthor!): Author
-        updateAuthor(id: ID!, editAuthor: EditAuthor!): Author
-        addReview(gameId: ID!, authorId: ID!, review: NewReview!): Review
+        addAuthor(author: NewAuthorInput!): Author
+        updateAuthor(id: ID!, editAuthor: EditAuthorInput!): Author
+        addReview(gameId: ID!, authorId: ID!, review: NewReviewInput!): Review
     }
 
-    input NewUser {
+    input NewUserInput {
         userName: String!
         email: String!
         password: String!
     }
 
-    input NewGame {
+    input NewGameInput {
         title: String!
         platform: [String!]!
     }
 
-    input EditGame {
+    input EditGameInput {
         title: String
         platform: [String!]
     }
 
-    input NewAuthor {
+    input NewAuthorInput {
         name: String!
         verified: Boolean!
     }
 
-    input EditAuthor {
+    input EditAuthorInput {
         name: String
         verified: Boolean
     }
 
-    input NewReview {
+    input NewReviewInput {
         rating: Float!
         content: String!
     }
