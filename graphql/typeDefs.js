@@ -20,6 +20,13 @@ export const typeDefs = `#graphql
         verified: Boolean!
         createdAt: String!
     }
+    type User {
+        id: ID!
+        userName: String!
+        email: String!
+        createdAt: String!
+        token: String!
+    }
 
     type Query {
         reviews: [Review]
@@ -31,12 +38,19 @@ export const typeDefs = `#graphql
     }
 
     type Mutation {
+        registerNewUser(newUser: NewUser!): User
         addGame(newGame: NewGame!): Game
         updateGame(id: ID!, editGame: EditGame!): Game
         deleteGame(id: ID!): [Game]
         addAuthor(author: NewAuthor!): Author
         updateAuthor(id: ID!, editAuthor: EditAuthor!): Author
         addReview(gameId: ID!, authorId: ID!, review: NewReview!): Review
+    }
+
+    input NewUser {
+        userName: String!
+        email: String!
+        password: String!
     }
 
     input NewGame {

@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql';
 import Game from '../models/Game.js';
 import Author from '../models/Author.js';
 import Review from '../models/Review.js';
+import User from '../models/User.js';
 
 export const resolvers = {
     Query: {
@@ -122,6 +123,66 @@ export const resolvers = {
         },
     },
     Mutation: {
+        registerNewUser: async (_, args) => {
+            try {
+                let { userName, email, password } = args.newUser;
+
+                let existingUser = await User.findOne({ email });
+
+                if (existingUser) {
+                    throw new GraphQLError('Email is already registered!', {
+                        path: 'registerNewUser',
+                        extensions: {
+                            code: "BAD_REQUEST",
+                            http: {
+                                status: 400,
+                            },
+                        }
+                    });
+                }
+
+                let existingUserName = await User.findOne({ userName });
+
+                if (existingUserName) {
+                    throw new GraphQLError('Username is already taken!', {
+                        path: 'registerNewUser',
+                        extensions: {
+                            code: "BAD_REQUEST",
+                            http: {
+                                status: 400,
+                            },
+                        }
+                    });
+                }
+
+                if (password.length < 8) {
+                    throw new GraphQLError('Password must be at least 8 characters long!', {
+                        path: 'registerNewUser',
+                        extensions: {
+                            code: "BAD_REQUEST",
+                            http: {
+                                status: 400,
+                            },
+                        }
+                    });
+                }
+
+                let newUser = await User.create({
+                    userName,
+                    email,
+                    password,
+                });
+
+                await newUser.save();
+
+                return newUser;
+            } catch (error) {
+                throw new GraphQLError(error.message, {
+                    path: 'registerNewUser',
+                    extensions: error.extensions
+                });
+            }
+        },
         deleteGame: async (_, args) => {
             let game = await Game.findById(args.id);
 
