@@ -39,6 +39,7 @@ export const typeDefs = `#graphql
 
     type Mutation {
         registerNewUser(newUser: NewUserInput!): User
+        loginUser(userLogin: UserLoginInput!): User
         addGame(newGame: NewGameInput!): Game
         updateGame(id: ID!, editGame: EditGameInput!): Game
         deleteGame(id: ID!): [Game]
@@ -76,5 +77,10 @@ export const typeDefs = `#graphql
     input NewReviewInput {
         rating: Float!
         content: String!
+    }
+
+    input UserLoginInput {
+        email: String!
+        password: String!
     }
 `;

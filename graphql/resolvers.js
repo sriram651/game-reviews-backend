@@ -3,7 +3,7 @@ import Game from '../models/Game.js';
 import Author from '../models/Author.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
-import { createToken, encryptPassword } from '../utils/userAuth.js';
+import { comparePassword, createToken, encryptPassword } from '../utils/userAuth.js';
 
 export const resolvers = {
     Query: {
@@ -169,7 +169,7 @@ export const resolvers = {
                 }
 
                 const hashedPassword = await encryptPassword(password);
-                
+
                 let newUser = await User.create({
                     userName,
                     email,
@@ -191,6 +191,55 @@ export const resolvers = {
             } catch (error) {
                 throw new GraphQLError(error.message, {
                     path: 'registerNewUser',
+                    extensions: error.extensions
+                });
+            }
+        },
+        loginUser: async (_, args) => {
+            try {
+                let { email, password } = args.userLogin;
+
+                let user = await User.findOne({ email });
+
+                if (!user) {
+                    throw new GraphQLError('Email not registered!', {
+                        path: 'loginUser',
+                        extensions: {
+                            code: "BAD_REQUEST",
+                            http: {
+                                status: 400,
+                            },
+                        }
+                    });
+                }
+
+                let isValidPassword = await comparePassword(password, user.password);
+
+                if (!isValidPassword) {
+                    throw new GraphQLError('Incorrect password!', {
+                        path: 'loginUser',
+                        extensions: {
+                            code: "BAD_REQUEST",
+                            http: {
+                                status: 400,
+                            },
+                        }
+                    });
+                }
+
+                let token = await createToken({
+                    userId: user._id,
+                    email: user.email,
+                });
+
+                return {
+                    id: user._id,
+                    ...user._doc,
+                    token,
+                };
+            } catch (error) {
+                throw new GraphQLError(error.message, {
+                    path: 'loginUser',
                     extensions: error.extensions
                 });
             }
