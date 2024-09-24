@@ -3,7 +3,7 @@ import Game from '../models/Game.js';
 import Author from '../models/Author.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
-import { encryptPassword } from '../utils/userAuth.js';
+import { createToken, encryptPassword } from '../utils/userAuth.js';
 
 export const resolvers = {
     Query: {
@@ -178,7 +178,16 @@ export const resolvers = {
 
                 await newUser.save();
 
-                return newUser;
+                let token = await createToken({
+                    userId: newUser._id,
+                    email: newUser.email,
+                });
+
+                return {
+                    id: newUser._id,
+                    ...newUser._doc,
+                    token,
+                };
             } catch (error) {
                 throw new GraphQLError(error.message, {
                     path: 'registerNewUser',

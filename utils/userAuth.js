@@ -14,7 +14,7 @@ export async function comparePassword(password, hashedPassword) {
 }
 
 export async function createToken(payload) {
-    const token = jwt.sign(payload, process.env.SECRET_TOKEN, { expiresIn: "1d" });
+    const token = jwt.sign(payload, process.env.SECRET_TOKEN, { expiresIn: "15m" });
 
     return token;
 }
