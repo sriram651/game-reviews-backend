@@ -11,16 +11,16 @@ export const typeDefs = `#graphql
         rating: Float!
         content: String!
         game: Game
-        author: Author
-        createdAt: String!
-    }
-    type Author {
-        id: ID!
-        name: String!
-        verified: Boolean!
+        user: User
         createdAt: String!
     }
     type User {
+        id: ID!
+        userName: String!
+        email: String!
+        createdAt: String!
+    }
+    type UserResponse {
         id: ID!
         userName: String!
         email: String!
@@ -33,19 +33,15 @@ export const typeDefs = `#graphql
         reviewById(id: ID!): Review
         games: [Game]
         gameById(id: ID!): Game
-        authors: [Author]
-        authorById(id: ID!): Author
     }
 
     type Mutation {
-        registerNewUser(newUser: NewUserInput!): User
-        loginUser(userLogin: UserLoginInput!): User
+        registerNewUser(newUser: NewUserInput!): UserResponse
+        loginUser(userLogin: UserLoginInput!): UserResponse
         addGame(newGame: NewGameInput!): Game
         updateGame(id: ID!, editGame: EditGameInput!): Game
         deleteGame(id: ID!): [Game]
-        addAuthor(author: NewAuthorInput!): Author
-        updateAuthor(id: ID!, editAuthor: EditAuthorInput!): Author
-        addReview(gameId: ID!, authorId: ID!, review: NewReviewInput!): Review
+        addReview(gameId: ID!, userId: ID!, review: NewReviewInput!): Review
     }
 
     input NewUserInput {
@@ -62,16 +58,6 @@ export const typeDefs = `#graphql
     input EditGameInput {
         title: String
         platform: [String!]
-    }
-
-    input NewAuthorInput {
-        name: String!
-        verified: Boolean!
-    }
-
-    input EditAuthorInput {
-        name: String
-        verified: Boolean
     }
 
     input NewReviewInput {

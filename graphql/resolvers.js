@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql';
 import Game from '../models/Game.js';
-import Author from '../models/Author.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
 import { comparePassword, createToken, encryptPassword } from '../utils/userAuth.js';
@@ -29,52 +28,6 @@ export const resolvers = {
 
             return game;
         },
-        authors: async () => {
-            try {
-                let authors = await Author.find({});
-
-                return authors;
-            } catch (error) {
-                throw new GraphQLError('Error fetching authors', {
-                    path: 'authors',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
-                });
-            }
-        },
-        authorById: async (_, args) => {
-            try {
-                let author = await Author.findById(args.id);
-
-                if (author === undefined || author === null) {
-                    throw new GraphQLError('Author not found', {
-                        path: 'authorById',
-                        extensions: {
-                            code: "NOT_FOUND",
-                            http: {
-                                status: 401,
-                            },
-                        }
-                    });
-                }
-
-                return author;
-            } catch (error) {
-                throw new GraphQLError('Error fetching author', {
-                    path: 'authorById',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
-                });
-            }
-        },
         reviews: async () => {
             try {
                 let reviews = await Review.find({});
@@ -97,7 +50,7 @@ export const resolvers = {
                 let { id } = args;
                 let reviewById = await Review.findById(id);
 
-                if (review === undefined || review === null) {
+                if (reviewById === undefined || reviewById === null) {
                     throw new GraphQLError('Review not found', {
                         path: 'reviewById',
                         extensions: {
@@ -109,7 +62,7 @@ export const resolvers = {
                     });
                 }
 
-                return review;
+                return reviewById;
             } catch (error) {
                 throw new GraphQLError('Error fetching review', {
                     path: 'reviewById',
@@ -329,76 +282,16 @@ export const resolvers = {
                 });
             }
         },
-        addAuthor: async (_, args) => {
-            try {
-                let newAuthor = await Author.create(args.author);
-
-                await newAuthor.save();
-
-                return newAuthor;
-            } catch (error) {
-                throw new GraphQLError('Error adding author', {
-                    path: 'addAuthor',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
-                });
-            }
-        },
-        updateAuthor: async (_, args) => {
-            try {
-                let { id, editAuthor } = args;
-
-                let editParams = {};
-
-                if (editAuthor.name) {
-                    editParams.name = editAuthor.name;
-                }
-
-                if (editAuthor.verified !== undefined && editAuthor.verified !== null) {
-                    editParams.verified = editAuthor.verified;
-                }
-
-                let author = await Author.findByIdAndUpdate(id, editParams, { new: true });
-
-                if (author === undefined || author === null) {
-                    throw new GraphQLError(`Author not found!`, {
-                        path: 'updateAuthor',
-                        extensions: {
-                            code: "NOT_FOUND",
-                            http: {
-                                status: 401,
-                            },
-                        }
-                    });
-                }
-
-                return author;
-            } catch (error) {
-                throw new GraphQLError('Error updating author', {
-                    path: 'updateAuthor',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    },
-                });
-            }
-        },
         addReview: async (_, args) => {
             try {
-                let { gameId, authorId, review } = args;
+                let { gameId, userId, review } = args;
 
                 let newReview = await Review.create({
                     title: review.title,
                     content: review.content,
                     rating: review.rating,
                     gameId: gameId,
-                    authorId: authorId,
+                    userId: userId,
                 });
 
                 await newReview.save();
@@ -461,18 +354,18 @@ export const resolvers = {
                 });
             }
         },
-        author: async (parent) => {
+        user: async (parent) => {
             try {
-                let author = await Author.findById(parent.authorId);
+                let user = await User.findById(parent.userId);
 
-                if (author === undefined || author === null) {
+                if (user === undefined || user === null) {
                     return null;
                 }
 
-                return author;
+                return user;
             } catch (error) {
-                throw new GraphQLError('Error fetching author', {
-                    path: 'review.author',
+                throw new GraphQLError('Error fetching user', {
+                    path: 'review.user',
                     extensions: {
                         code: "INTERNAL_SERVER_ERROR",
                         http: {
