@@ -1,21 +1,24 @@
 export const typeDefs = `#graphql
     type Game {
-        id: ID!,
-        title: String!,
+        id: ID!
+        title: String!
         platform: [String!]!
         reviews: [Review!]
+        createdAt: String
     }
     type Review {
-        id: ID!,
-        rating: Int!,
-        content: String!,
+        id: ID!
+        rating: Int!
+        content: String!
         game: Game!
         author: Author! 
+        createdAt: String
     }
     type Author {
-        id: ID!,
-        name: String!,
-        verified: Boolean!,
+        id: ID!
+        name: String!
+        verified: Boolean!
+        createdAt: String
     }
 
     type Query {
@@ -31,6 +34,8 @@ export const typeDefs = `#graphql
         addGame(newGame: NewGame!): Game
         updateGame(id: ID!, editGame: EditGame!): Game
         deleteGame(id: ID!): [Game]
+        addAuthor(author: NewAuthor!): Author
+        updateAuthor(id: ID!, editAuthor: EditAuthor!): Author
     }
 
     input NewGame {
@@ -41,5 +46,15 @@ export const typeDefs = `#graphql
     input EditGame {
         title: String
         platform: [String!]
+    }
+
+    input NewAuthor {
+        name: String!
+        verified: Boolean!
+    }
+
+    input EditAuthor {
+        name: String
+        verified: Boolean
     }
 `;

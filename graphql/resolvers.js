@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql';
 import db from '../_db.js';
 import Game from '../models/Game.js';
+import Author from '../models/Author.js';
 
 export const resolvers = {
     Query: {
@@ -26,25 +27,51 @@ export const resolvers = {
 
             return game;
         },
-        authors() {
-            return db.authors;
-        },
-        authorById(_, args) {
-            let author = db.authors.find((author) => author.id == args.id);
+        authors: async () => {
+            try {
+                let authors = await Author.find({});
 
-            if (author === undefined || author === null) {
-                throw new GraphQLError('Author not found', {
-                    path: 'authorById',
+                return authors;
+            } catch (error) {
+                throw new GraphQLError('Error fetching authors', {
+                    path: 'authors',
                     extensions: {
-                        code: "NOT_FOUND",
+                        code: "INTERNAL_SERVER_ERROR",
                         http: {
-                            status: 401,
+                            status: 500,
                         },
                     }
                 });
             }
+        },
+        authorById: async (_, args) => {
+            try {
+                let author = await Author.findById(args.id);
 
-            return author;
+                if (author === undefined || author === null) {
+                    throw new GraphQLError('Author not found', {
+                        path: 'authorById',
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                return author;
+            } catch (error) {
+                throw new GraphQLError('Error fetching author', {
+                    path: 'authorById',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
         },
         reviews() {
             return db.reviews;
@@ -126,7 +153,19 @@ export const resolvers = {
         },
         updateGame: async (_, args) => {
             try {
-                let game = await Game.findById(args.id);
+                let { id, editGame } = args;
+
+                let editParams = {};
+
+                if (editGame.title) {
+                    editParams.title = editGame.title;
+                }
+
+                if (editGame.platform) {
+                    editParams.platform = editGame.platform;
+                }
+
+                let game = await Game.findByIdAndUpdate(id, editParams, { new: true });
 
                 if (game === undefined || game === null) {
                     throw new GraphQLError(`Game not found!`, {
@@ -140,11 +179,6 @@ export const resolvers = {
                     });
                 }
 
-                game.title = args.editGame.title;
-                game.platform = args.editGame.platform;
-
-                await game.save();
-
                 return game;
             } catch (error) {
                 throw new GraphQLError('Error updating game', {
@@ -156,6 +190,66 @@ export const resolvers = {
                         },
                     },
                     originalError: error
+                });
+            }
+        },
+        addAuthor: async (_, args) => {
+            try {
+                let newAuthor = await Author.create(args.author);
+
+                await newAuthor.save();
+
+                return newAuthor;
+            } catch (error) {
+                throw new GraphQLError('Error adding author', {
+                    path: 'addAuthor',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
+        },
+        updateAuthor: async (_, args) => {
+            try {
+                let { id, editAuthor } = args;
+
+                let editParams = {};
+
+                if (editAuthor.name) {
+                    editParams.name = editAuthor.name;
+                }
+
+                if (editAuthor.verified !== undefined && editAuthor.verified !== null) {
+                    editParams.verified = editAuthor.verified;
+                }
+
+                let author = await Author.findByIdAndUpdate(id, editParams, { new: true });
+
+                if (author === undefined || author === null) {
+                    throw new GraphQLError(`Author not found!`, {
+                        path: 'updateAuthor',
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                return author;
+            } catch (error) {
+                throw new GraphQLError('Error updating author', {
+                    path: 'updateAuthor',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
                 });
             }
         }
