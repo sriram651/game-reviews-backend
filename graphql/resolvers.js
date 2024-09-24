@@ -3,6 +3,7 @@ import Game from '../models/Game.js';
 import Author from '../models/Author.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
+import { encryptPassword } from '../utils/userAuth.js';
 
 export const resolvers = {
     Query: {
@@ -167,10 +168,12 @@ export const resolvers = {
                     });
                 }
 
+                const hashedPassword = await encryptPassword(password);
+                
                 let newUser = await User.create({
                     userName,
                     email,
-                    password,
+                    password: hashedPassword,
                 });
 
                 await newUser.save();
