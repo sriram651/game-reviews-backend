@@ -3,8 +3,9 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import mongoose from "mongoose";
+import "dotenv/config";
 
-let MONGODB_URI = `mongodb+srv://sriram_venkatesh:RN7KDBpASPUSm7gT@cluster0.8moomsn.mongodb.net/serverDB?retryWrites=true&w=majority&appName=Cluster0`;
+let mongoUri = process.env.MONGODB_URI;
 
 // Server setup
 const server = new ApolloServer({
@@ -12,9 +13,9 @@ const server = new ApolloServer({
     resolvers: resolvers,
 });
 
-await mongoose.connect(MONGODB_URI);
+await mongoose.connect(mongoUri);
 
-console.log(`Connected to MongoDB - ${MONGODB_URI}`);
+console.log(`Connected to MongoDB - ${mongoUri}`);
 
 mongoose.set('debug', true);
 

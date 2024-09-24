@@ -124,35 +124,40 @@ export const resolvers = {
                 });
             }
         },
-        updateGame(_, args) {
-            let editGame = db.games.find((game) => game.id === args.id);
+        updateGame: async (_, args) => {
+            try {
+                let game = await Game.findById(args.id);
 
-            if (editGame === undefined || editGame === null) {
-                throw new GraphQLError(`Game with Id ${args.id} not found!`, {
-                    path: 'updateGame',
-                    extensions: {
-                        code: "NOT_FOUND",
-                        http: {
-                            status: 401,
-                        },
-                    }
-                });
-            }
-
-            let updatedGames = db.games.map((game) => {
-                if (game.id === args.id) {
-                    return {
-                        ...game,
-                        ...args.editGame
-                    };
+                if (game === undefined || game === null) {
+                    throw new GraphQLError(`Game not found!`, {
+                        path: 'updateGame',
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
                 }
 
+                game.title = args.editGame.title;
+                game.platform = args.editGame.platform;
+
+                await game.save();
+
                 return game;
-            });
-
-            db.games = updatedGames;
-
-            return db.games.find((game) => game.id === args.id);
+            } catch (error) {
+                throw new GraphQLError('Error updating game', {
+                    path: 'updateGame',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
         }
     }
 };
