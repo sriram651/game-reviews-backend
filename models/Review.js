@@ -4,7 +4,7 @@ const reviewSchema = new Schema({
     title: String,
     content: String,
     rating: Number,
-    reviewerId: String,
+    authorId: String,
     gameId: String,
     createdAt: {
         type: Date,

@@ -1,5 +1,4 @@
 import { GraphQLError } from 'graphql';
-import db from '../_db.js';
 import Game from '../models/Game.js';
 import Author from '../models/Author.js';
 import Review from '../models/Review.js';
@@ -95,7 +94,7 @@ export const resolvers = {
             try {
                 let { id } = args;
                 let reviewById = await Review.findById(id);
-    
+
                 if (review === undefined || review === null) {
                     throw new GraphQLError('Review not found', {
                         path: 'reviewById',
@@ -107,7 +106,7 @@ export const resolvers = {
                         }
                     });
                 }
-    
+
                 return review;
             } catch (error) {
                 throw new GraphQLError('Error fetching review', {
@@ -121,19 +120,6 @@ export const resolvers = {
                 });
             }
         },
-    },
-    Game: {
-        reviews(parent) {
-            return db.reviews.filter((review) => review.game_id === parent.id);
-        }
-    },
-    Review: {
-        game(parent) {
-            return db.games.find((game) => game.id === parent.game_id);
-        },
-        author(parent) {
-            return db.authors.find((author) => author.id === parent.author_id);
-        }
     },
     Mutation: {
         deleteGame: async (_, args) => {
@@ -309,5 +295,71 @@ export const resolvers = {
                 });
             }
         },
-    }
+    },
+    Game: {
+        reviews: async (parent) => {
+            try {
+                let reviews = Review.find({ gameId: parent._id });
+
+                return reviews;
+            } catch (error) {
+                throw new GraphQLError('Error fetching reviews', {
+                    path: 'game.reviews',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
+        }
+    },
+    Review: {
+        game: async (parent) => {
+            try {
+                let game = await Game.findById(parent.gameId);
+
+                if (game === undefined || game === null) {
+                    return null;
+                }
+
+                return game;
+            } catch (error) {
+                throw new GraphQLError('Error fetching game', {
+                    path: 'review.game',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
+        },
+        author: async (parent) => {
+            try {
+                let author = await Author.findById(parent.authorId);
+
+                if (author === undefined || author === null) {
+                    return null;
+                }
+
+                return author;
+            } catch (error) {
+                throw new GraphQLError('Error fetching author', {
+                    path: 'review.author',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
+        }
+    },
 };
