@@ -8,7 +8,7 @@ export const typeDefs = `#graphql
     }
     type Review {
         id: ID!
-        rating: Int!
+        rating: Float!
         content: String!
         game: Game!
         author: Author! 
@@ -36,6 +36,7 @@ export const typeDefs = `#graphql
         deleteGame(id: ID!): [Game]
         addAuthor(author: NewAuthor!): Author
         updateAuthor(id: ID!, editAuthor: EditAuthor!): Author
+        addReview(gameId: ID!, authorId: ID!, review: NewReview!): Review
     }
 
     input NewGame {
@@ -56,5 +57,10 @@ export const typeDefs = `#graphql
     input EditAuthor {
         name: String
         verified: Boolean
+    }
+
+    input NewReview {
+        rating: Float!
+        content: String!
     }
 `;

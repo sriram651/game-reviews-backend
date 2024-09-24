@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql';
 import db from '../_db.js';
 import Game from '../models/Game.js';
 import Author from '../models/Author.js';
+import Review from '../models/Review.js';
 
 export const resolvers = {
     Query: {
@@ -73,25 +74,52 @@ export const resolvers = {
                 });
             }
         },
-        reviews() {
-            return db.reviews;
-        },
-        reviewById(_, args) {
-            let review = db.reviews.find((review) => review.id === args.id);
+        reviews: async () => {
+            try {
+                let reviews = await Review.find({});
 
-            if (review === undefined || review === null) {
-                throw new GraphQLError('Review not found', {
-                    path: 'reviewById',
+                return reviews;
+            } catch (error) {
+                throw new GraphQLError('Error fetching reviews', {
+                    path: 'reviews',
                     extensions: {
-                        code: "NOT_FOUND",
+                        code: "INTERNAL_SERVER_ERROR",
                         http: {
-                            status: 401,
+                            status: 500,
                         },
                     }
                 });
             }
-
-            return review;
+        },
+        reviewById: async (_, args) => {
+            try {
+                let { id } = args;
+                let reviewById = await Review.findById(id);
+    
+                if (review === undefined || review === null) {
+                    throw new GraphQLError('Review not found', {
+                        path: 'reviewById',
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+    
+                return review;
+            } catch (error) {
+                throw new GraphQLError('Error fetching review', {
+                    path: 'reviewById',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
         },
     },
     Game: {
@@ -252,6 +280,34 @@ export const resolvers = {
                     },
                 });
             }
-        }
+        },
+        addReview: async (_, args) => {
+            try {
+                let { gameId, authorId, review } = args;
+
+                let newReview = await Review.create({
+                    title: review.title,
+                    content: review.content,
+                    rating: review.rating,
+                    gameId: gameId,
+                    authorId: authorId,
+                });
+
+                await newReview.save();
+
+                return newReview;
+            } catch (error) {
+                throw new GraphQLError('Error adding review', {
+                    path: 'addReview',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
+        },
     }
 };
