@@ -329,6 +329,45 @@ export const resolvers = {
                 });
             }
         },
+        updateReview: async (_, args) => {
+            try {
+                let { id, review } = args;
+
+                let editParams = {};
+
+                if (review.content) {
+                    editParams.content = review.content;
+                }
+
+                if (review.rating) {
+                    editParams.rating = review.rating;
+                }
+
+                let updatedReview = await Review.findByIdAndUpdate(id, {
+                    ...editParams,
+                    updatedAt: new Date().toISOString()
+                }, { new: true });
+
+                if (updatedReview === undefined || updatedReview === null) {
+                    throw new GraphQLError(`Review not found!`, {
+                        path: 'updateReview',
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                return updatedReview;
+            } catch (error) {
+                throw new GraphQLError(error.message, {
+                    path: 'updateReview',
+                    extensions: error.extensions
+                });
+            }
+        },
     },
     Game: {
         reviews: async (parent) => {

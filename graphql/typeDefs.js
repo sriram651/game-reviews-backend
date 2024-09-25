@@ -43,6 +43,7 @@ export const typeDefs = `#graphql
         updateGame(id: ID!, editGame: EditGameInput!): Game
         deleteGame(id: ID!): [Game]
         addReview(gameId: ID!, userId: ID!, review: NewReviewInput!): Review
+        updateReview(id: ID!, review: UpdateReviewInput!): Review
     }
 
     input NewUserInput {
@@ -64,6 +65,11 @@ export const typeDefs = `#graphql
     input NewReviewInput {
         rating: Float!
         content: String!
+    }
+
+    input UpdateReviewInput {
+        rating: Float
+        content: String
     }
 
     input UserLoginInput {
