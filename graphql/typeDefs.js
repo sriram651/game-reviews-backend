@@ -33,7 +33,7 @@ export const typeDefs = `#graphql
         reviewById(id: ID!): Review
         getAllGames: [Game]
         getGameById(id: ID!): Game
-        getReviewsByUser(userId: ID!): [Review]
+        getReviewsByUser: [Review]
     }
 
     type Mutation {
@@ -42,7 +42,7 @@ export const typeDefs = `#graphql
         addGame(newGame: NewGameInput!): Game
         updateGame(id: ID!, editGame: EditGameInput!): Game
         deleteGame(id: ID!): [Game]
-        addReview(gameId: ID!, userId: ID!, review: NewReviewInput!): Review
+        addReview(gameId: ID! review: NewReviewInput!): Review
         updateReview(id: ID!, review: UpdateReviewInput!): Review
     }
 

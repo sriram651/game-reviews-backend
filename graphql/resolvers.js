@@ -75,22 +75,29 @@ export const resolvers = {
                 });
             }
         },
-        getReviewsByUser: async (_, args) => {
+        getReviewsByUser: async (_, args, context) => {
             try {
-                let { userId } = args;
+                let { userId } = context.user;
+
+                if (!userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        path: 'getReviewsByUser',
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
 
                 let userReviews = await Review.find({ userId });
 
                 return userReviews;
             } catch (error) {
-                throw new GraphQLError('Error fetching user reviews', {
+                throw new GraphQLError(error.message, {
                     path: 'getReviewsByUser',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
+                    extensions: error.extensions
                 });
             }
         },
@@ -301,9 +308,23 @@ export const resolvers = {
                 });
             }
         },
-        addReview: async (_, args) => {
+        addReview: async (_, args, context) => {
             try {
-                let { gameId, userId, review } = args;
+                let { userId } = context.user;
+
+                if (!userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        path: 'addReview',
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                let { gameId, review } = args;
 
                 let newReview = await Review.create({
                     title: review.title,
@@ -317,20 +338,28 @@ export const resolvers = {
 
                 return newReview;
             } catch (error) {
-                throw new GraphQLError('Error adding review', {
+                throw new GraphQLError(error.message, {
                     path: 'addReview',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    },
-                    originalError: error
+                    extensions: error.extensions,
                 });
             }
         },
         updateReview: async (_, args) => {
             try {
+                let { userId } = context.user;
+
+                if (!userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        path: 'updateReview',
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
                 let { id, review } = args;
 
                 let editParams = {};

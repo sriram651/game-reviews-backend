@@ -4,6 +4,7 @@ import { typeDefs } from "./graphql/typeDefs.js";
 import { resolvers } from "./graphql/resolvers.js";
 import mongoose from "mongoose";
 import "dotenv/config";
+import authenticate from "./middleware/auth.js";
 
 let mongoUri = process.env.MONGODB_URI;
 
@@ -22,6 +23,15 @@ mongoose.set('debug', true);
 const { url } = await startStandaloneServer(server, {
     listen: {
         port: 4000,
+    },
+    context: async ({ req }) => {
+        const user = await authenticate(req);
+
+        if (!user) {
+            return { user: null };
+        }
+
+        return { user };
     }
 });
 
