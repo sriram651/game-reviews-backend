@@ -7,6 +7,10 @@ const gameSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    }
 });
 
 export default model("Game", gameSchema);

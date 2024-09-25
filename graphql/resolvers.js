@@ -75,6 +75,25 @@ export const resolvers = {
                 });
             }
         },
+        getReviewsByUser: async (_, args) => {
+            try {
+                let { userId } = args;
+
+                let userReviews = await Review.find({ userId });
+
+                return userReviews;
+            } catch (error) {
+                throw new GraphQLError('Error fetching user reviews', {
+                    path: 'getReviewsByUser',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
+        },
     },
     Mutation: {
         registerNewUser: async (_, args) => {
