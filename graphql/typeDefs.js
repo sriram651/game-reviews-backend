@@ -31,8 +31,8 @@ export const typeDefs = `#graphql
     type Query {
         reviews: [Review]
         reviewById(id: ID!): Review
-        games: [Game]
-        gameById(id: ID!): Game
+        getAllGames: [Game]
+        getGameById(id: ID!): Game
         getReviewsByUser(userId: ID!): [Review]
     }
 

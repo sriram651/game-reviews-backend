@@ -6,12 +6,12 @@ import { comparePassword, createToken, encryptPassword } from '../utils/userAuth
 
 export const resolvers = {
     Query: {
-        games: async () => {
+        getAllGames: async () => {
             let allGames = await Game.find({});
 
             return allGames;
         },
-        gameById: async (_, args) => {
+        getGameById: async (_, args) => {
             let game = await Game.findById(args.id);
 
             if (game === undefined || game === null) {
