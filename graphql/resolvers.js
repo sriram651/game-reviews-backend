@@ -11,25 +11,25 @@ export const resolvers = {
                 let search = args.search || '';
                 let platform = args.platform || [];
 
-                let allGames = await Game.aggregate([
+                let aggregateQuery = [
                     {
                         $match: {
-                            title: { $regex: search, $options: 'i' },
-                            platform: { $in: platform }
+                            title: { $regex: search, $options: 'i' }
                         }
                     }
-                ]);
+                ];
+
+                if (platform.length > 0) {
+                    aggregateQuery[0].$match.platform = { $in: platform };
+                }
+
+                let allGames = await Game.aggregate(aggregateQuery);
 
                 return allGames;
             } catch (error) {
-                throw new GraphQLError('Error fetching games', {
+                throw new GraphQLError(error.message, {
                     path: 'getAllGames',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
+                    extensions: error.extensions
                 });
             }
         },
@@ -300,6 +300,14 @@ export const resolvers = {
 
                 if (editGame.platform) {
                     editParams.platform = editGame.platform;
+                }
+
+                if (editGame.releasedYear) {
+                    editParams.releasedYear = editGame.releasedYear;
+                }
+
+                if (editGame.genre) {
+                    editParams.genre = editGame.genre;
                 }
 
                 let game = await Game.findByIdAndUpdate(id, {

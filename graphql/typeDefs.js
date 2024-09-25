@@ -3,6 +3,8 @@ export const typeDefs = `#graphql
         id: ID!
         title: String!
         platform: [String!]!
+        releasedYear: Int!
+        genre: [String!]!
         reviews: [Review!]
         createdAt: String!
     }
@@ -40,6 +42,28 @@ export const typeDefs = `#graphql
         MOBILE
     }
 
+    enum Genre {
+        ACTION
+        ADVENTURE
+        RPG
+        STRATEGY
+        SIMULATION
+        SPORTS
+        PUZZLE
+        HORROR
+        FPS
+        TPS
+        OPEN_WORLD
+        MULTIPLAYER
+        MMO
+        CARD
+        PLATFORMER
+        FIGHTING
+        RACING
+        ARCADE
+        SURVIVAL
+    }
+
     type Query {
         reviews: [Review]
         reviewById(id: ID!): Review
@@ -67,11 +91,15 @@ export const typeDefs = `#graphql
     input NewGameInput {
         title: String!
         platform: [Platform!]!
+        releasedYear: Int!
+        genre: [Genre!]!
     }
 
     input EditGameInput {
         title: String
         platform: [Platform!]
+        releasedYear: Int
+        genre: [Genre!]
     }
 
     input NewReviewInput {
