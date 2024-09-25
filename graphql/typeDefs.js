@@ -28,10 +28,22 @@ export const typeDefs = `#graphql
         token: String!
     }
 
+    enum Platform {
+        PC
+        PS4
+        PS5
+        XBOX
+        XBOX360
+        XBOXONE
+        NINTENDO
+        SWITCH
+        MOBILE
+    }
+
     type Query {
         reviews: [Review]
         reviewById(id: ID!): Review
-        getAllGames: [Game]
+        getAllGames(search: String, platform: [Platform]): [Game]
         getGameById(id: ID!): Game
         getReviewsByUser: [Review]
     }
@@ -54,12 +66,12 @@ export const typeDefs = `#graphql
 
     input NewGameInput {
         title: String!
-        platform: [String!]!
+        platform: [Platform!]!
     }
 
     input EditGameInput {
         title: String
-        platform: [String!]
+        platform: [Platform!]
     }
 
     input NewReviewInput {

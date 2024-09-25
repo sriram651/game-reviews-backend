@@ -6,10 +6,32 @@ import { comparePassword, createToken, encryptPassword } from '../utils/userAuth
 
 export const resolvers = {
     Query: {
-        getAllGames: async () => {
-            let allGames = await Game.find({});
+        getAllGames: async (_, args) => {
+            try {
+                let search = args.search || '';
+                let platform = args.platform || [];
 
-            return allGames;
+                let allGames = await Game.aggregate([
+                    {
+                        $match: {
+                            title: { $regex: search, $options: 'i' },
+                            platform: { $in: platform }
+                        }
+                    }
+                ]);
+
+                return allGames;
+            } catch (error) {
+                throw new GraphQLError('Error fetching games', {
+                    path: 'getAllGames',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    }
+                });
+            }
         },
         getGameById: async (_, args) => {
             let game = await Game.findById(args.id);
@@ -280,7 +302,10 @@ export const resolvers = {
                     editParams.platform = editGame.platform;
                 }
 
-                let game = await Game.findByIdAndUpdate(id, editParams, { new: true });
+                let game = await Game.findByIdAndUpdate(id, {
+                    ...editParams,
+                    updatedAt: new Date().toISOString()
+                }, { new: true });
 
                 if (game === undefined || game === null) {
                     throw new GraphQLError(`Game not found!`, {
