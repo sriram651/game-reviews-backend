@@ -158,7 +158,7 @@ export const resolvers = {
     Mutation: {
         registerNewUser: async (_, args) => {
             try {
-                let { userName, email, password } = args.newUser;
+                let { userName, email, password, role } = args.newUser;
 
                 let existingUser = await User.findOne({ email });
 
@@ -206,6 +206,7 @@ export const resolvers = {
                     userName,
                     email,
                     password: hashedPassword,
+                    role,
                 });
 
                 await newUser.save();
@@ -291,7 +292,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "admin") {
+                if (context.user.role !== "ADMIN") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",
@@ -338,7 +339,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "admin") {
+                if (context.user.role !== "ADMIN") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",
@@ -379,7 +380,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "admin") {
+                if (context.user.role !== "ADMIN") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",

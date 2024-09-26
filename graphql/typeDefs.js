@@ -32,6 +32,11 @@ export const typeDefs = `#graphql
         token: String!
     }
 
+    enum Role {
+        ADMIN
+        USER
+    }
+
     enum Platform {
         PC
         PS4
@@ -98,6 +103,7 @@ export const typeDefs = `#graphql
         userName: String!
         email: String!
         password: String!
+        role: Role
     }
 
     input NewGameInput {
