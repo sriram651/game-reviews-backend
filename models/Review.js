@@ -6,6 +6,20 @@ const reviewSchema = new Schema({
     rating: Number,
     userId: String,
     gameId: String,
+    upVotes: { 
+        type: Number, 
+        default: 0 
+    },
+    downVotes: { 
+        type: Number, 
+        default: 0 
+    },
+    voters: [
+        { 
+            userId: String, 
+            voteType: String 
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now,

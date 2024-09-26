@@ -99,6 +99,8 @@ export const typeDefs = `#graphql
         deleteGame(id: ID!): [Game]
         addReview(gameId: ID! review: NewReviewInput!): Review
         updateReview(id: ID!, review: UpdateReviewInput!): Review
+        upVoteReview(reviewId: ID!): Boolean!
+        downVoteReview(reviewId: ID!): Boolean!
     }
 
     input NewUserInput {

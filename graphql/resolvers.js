@@ -578,6 +578,114 @@ export const resolvers = {
                 });
             }
         },
+        upVoteReview: async (_, args, context) => {
+            try {
+                let { userId } = context.user;
+
+                if (!userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        extensions: {
+                            code: "UNAUTHENTICATED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                let { reviewId } = args;
+
+                let review = await Review.findById(reviewId);
+
+                if (!review) {
+                    throw new GraphQLError('Review not found!', {
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 404,
+                            },
+                        }
+                    });
+                }
+
+                let voter = review.voters.find(voter => voter.userId === userId);
+
+                if (!voter) {
+                    review.upVotes += 1;
+                    review.voters.push({ userId, voteType: "UP" });
+                } else if (voter.voteType === "DOWN") {
+                    review.upVotes += 1;
+                    review.downVotes -= 1;
+                    voter.voteType = "UP";
+                } else if (voter.voteType === "UP") {
+                    review.upVotes -= 1;
+                    review.voters = review.voters.filter(voter => voter.userId !== userId);
+                }
+
+                await review.save();
+
+                return true;
+            } catch (error) {
+                throw new GraphQLError(error.message, {
+                    path: 'upVoteReview',
+                    extensions: error.extensions
+                });
+            }
+        },
+        downVoteReview: async (_, args, context) => {
+            try {
+                let { userId } = context.user;
+
+                if (!userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        extensions: {
+                            code: "UNAUTHENTICATED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                let { reviewId } = args;
+
+                let review = await Review.findById(reviewId);
+
+                if (!review) {
+                    throw new GraphQLError('Review not found!', {
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 404,
+                            },
+                        }
+                    });
+                }
+
+                let voter = review.voters.find(voter => voter.userId === userId);
+
+                if (!voter) {
+                    review.downVotes += 1;
+                    review.voters.push({ userId, voteType: "DOWN" });
+                } else if (voter.voteType === "UP") {
+                    review.downVotes += 1;
+                    review.upVotes -= 1;
+                    voter.voteType = "DOWN";
+                } else if (voter.voteType === "DOWN") {
+                    review.downVotes -= 1;
+                    review.voters = review.voters.filter(voter => voter.userId !== userId);
+                }
+
+                await review.save();
+
+                return true;
+            } catch (error) {
+                throw new GraphQLError(error.message, {
+                    path: 'downVoteReview',
+                    extensions: error.extensions
+                });
+            }
+        },
     },
     Game: {
         reviews: async (parent) => {
