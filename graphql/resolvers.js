@@ -8,20 +8,39 @@ export const resolvers = {
     Query: {
         getAllGames: async (_, args) => {
             try {
-                let search = args.search || '';
-                let platform = args.platform || [];
+                let { search = "", platform = [], genre = [], yearRange = [] } = args;
+
+                let matchConditions = {
+                    title: { $regex: search, $options: 'i' }
+                };
+
+                if (platform.length > 0) {
+                    matchConditions.platform = { $in: platform };
+                }
+
+                if (genre.length > 0) {
+                    matchConditions.genre = { $in: genre };
+                }
+
+                if (yearRange) {
+                    let minYear = yearRange[0];
+                    let maxYear = yearRange[0];
+
+                    if (yearRange.length > 1) {
+                        maxYear = yearRange[1];
+                    }
+
+                    matchConditions.releasedYear = {
+                        $gte: minYear,
+                        $lte: maxYear
+                    }
+                }
 
                 let aggregateQuery = [
                     {
-                        $match: {
-                            title: { $regex: search, $options: 'i' }
-                        }
+                        $match: matchConditions
                     }
                 ];
-
-                if (platform.length > 0) {
-                    aggregateQuery[0].$match.platform = { $in: platform };
-                }
 
                 let allGames = await Game.aggregate(aggregateQuery);
 

@@ -67,7 +67,7 @@ export const typeDefs = `#graphql
     type Query {
         reviews: [Review]
         reviewById(id: ID!): Review
-        getAllGames(search: String, platform: [Platform]): [Game]
+        getAllGames(search: String, platform: [Platform], genre: [Genre], yearRange: [Int!]): [Game]
         getGameById(id: ID!): Game
         getReviewsByUser: [Review]
     }
