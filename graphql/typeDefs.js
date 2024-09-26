@@ -91,6 +91,7 @@ export const typeDefs = `#graphql
     }
 
     type Mutation {
+        changeUserRole(email: String!, role: Role!): User
         registerNewUser(newUser: NewUserInput!): UserResponse
         loginUser(userLogin: UserLoginInput!): UserResponse
         addGame(newGame: NewGameInput!): Game
