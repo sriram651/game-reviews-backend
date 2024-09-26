@@ -14,6 +14,10 @@ const reviewSchema = new Schema({
         type: Number, 
         default: 0 
     },
+    score: {
+        type: Number,
+        default: 0
+    },
     voters: [
         { 
             userId: String, 

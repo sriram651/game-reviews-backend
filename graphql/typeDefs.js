@@ -14,6 +14,7 @@ export const typeDefs = `#graphql
         content: String!
         upVotes: Int!
         downVotes: Int!
+        score: Int!
         voters: [ReviewVoter!]
         game: Game
         user: User

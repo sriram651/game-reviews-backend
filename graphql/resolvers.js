@@ -3,6 +3,7 @@ import Game from '../models/Game.js';
 import Review from '../models/Review.js';
 import User from '../models/User.js';
 import { comparePassword, createToken, encryptPassword } from '../utils/userAuth.js';
+import { voteReview } from '../utils/reviews.js';
 
 export const resolvers = {
     Query: {
@@ -595,36 +596,9 @@ export const resolvers = {
 
                 let { reviewId } = args;
 
-                let review = await Review.findById(reviewId);
+                let isVoted = await voteReview("UP", reviewId, userId);
 
-                if (!review) {
-                    throw new GraphQLError('Review not found!', {
-                        extensions: {
-                            code: "NOT_FOUND",
-                            http: {
-                                status: 404,
-                            },
-                        }
-                    });
-                }
-
-                let voter = review.voters.find(voter => voter.userId === userId);
-
-                if (!voter) {
-                    review.upVotes += 1;
-                    review.voters.push({ userId, voteType: "UP" });
-                } else if (voter.voteType === "DOWN") {
-                    review.upVotes += 1;
-                    review.downVotes -= 1;
-                    voter.voteType = "UP";
-                } else if (voter.voteType === "UP") {
-                    review.upVotes -= 1;
-                    review.voters = review.voters.filter(voter => voter.userId !== userId);
-                }
-
-                await review.save();
-
-                return true;
+                return isVoted;
             } catch (error) {
                 throw new GraphQLError(error.message, {
                     path: 'upVoteReview',
@@ -649,36 +623,9 @@ export const resolvers = {
 
                 let { reviewId } = args;
 
-                let review = await Review.findById(reviewId);
+                let isVoted = await voteReview("DOWN", reviewId, userId);
 
-                if (!review) {
-                    throw new GraphQLError('Review not found!', {
-                        extensions: {
-                            code: "NOT_FOUND",
-                            http: {
-                                status: 404,
-                            },
-                        }
-                    });
-                }
-
-                let voter = review.voters.find(voter => voter.userId === userId);
-
-                if (!voter) {
-                    review.downVotes += 1;
-                    review.voters.push({ userId, voteType: "DOWN" });
-                } else if (voter.voteType === "UP") {
-                    review.downVotes += 1;
-                    review.upVotes -= 1;
-                    voter.voteType = "DOWN";
-                } else if (voter.voteType === "DOWN") {
-                    review.downVotes -= 1;
-                    review.voters = review.voters.filter(voter => voter.userId !== userId);
-                }
-
-                await review.save();
-
-                return true;
+                return isVoted;
             } catch (error) {
                 throw new GraphQLError(error.message, {
                     path: 'downVoteReview',
