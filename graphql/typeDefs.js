@@ -35,6 +35,7 @@ export const typeDefs = `#graphql
     enum Role {
         ADMIN
         USER
+        # SUPER_ADMIN
     }
 
     enum Platform {

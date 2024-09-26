@@ -292,7 +292,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "ADMIN") {
+                if (context.user.role === "USER") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",
@@ -339,7 +339,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "ADMIN") {
+                if (context.user.role === "USER") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",
@@ -380,7 +380,7 @@ export const resolvers = {
                     });
                 }
 
-                if (context.user.role !== "ADMIN") {
+                if (context.user.role === "USER") {
                     throw new GraphQLError('You do not have authorization!', {
                         extensions: {
                             code: "UNAUTHORIZED",
