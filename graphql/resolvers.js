@@ -84,7 +84,15 @@ export const resolvers = {
         },
         reviews: async () => {
             try {
-                let reviews = await Review.find({});
+                let reviews = await Review.aggregate([
+                    {
+                        $sort: {
+                            score: -1,
+                            upVotes: -1,
+                            createdAt: -1
+                        }
+                    }
+                ]);
 
                 return reviews;
             } catch (error) {

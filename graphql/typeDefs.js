@@ -9,7 +9,7 @@ export const typeDefs = `#graphql
         createdAt: String!
     }
     type Review {
-        id: ID!
+        _id: ID!
         rating: Float!
         content: String!
         upVotes: Int!
