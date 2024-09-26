@@ -12,6 +12,9 @@ export const typeDefs = `#graphql
         id: ID!
         rating: Float!
         content: String!
+        upVotes: Int!
+        downVotes: Int!
+        voters: [ReviewVoter!]
         game: Game
         user: User
         createdAt: String!
@@ -30,6 +33,10 @@ export const typeDefs = `#graphql
         createdAt: String!
         role: String!
         token: String!
+    }
+    type ReviewVoter {
+        userId: ID!
+        voteType: VoteType!
     }
 
     enum Role {
@@ -80,6 +87,11 @@ export const typeDefs = `#graphql
     enum SortOrder {
         ASC
         DESC
+    }
+
+    enum VoteType {
+        UP
+        DOWN
     }
 
     type Query {
