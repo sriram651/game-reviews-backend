@@ -17,13 +17,15 @@ export default async function authenticate(req) {
         if (!decoded) {
             return {
                 userId: null,
-                email: null
+                email: null,
+                role: null,
             };
         }
 
         return { 
             userId: decoded.userId, 
-            email: decoded.email 
+            email: decoded.email,
+            role: decoded.role,
         };
     } catch (error) {
         throw new Error('Invalid or expired token');

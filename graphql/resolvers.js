@@ -213,6 +213,7 @@ export const resolvers = {
                 let token = await createToken({
                     userId: newUser._id,
                     email: newUser.email,
+                    role: newUser.role,
                 });
 
                 return {
@@ -262,6 +263,7 @@ export const resolvers = {
                 let token = await createToken({
                     userId: user._id,
                     email: user.email,
+                    role: user.role,
                 });
 
                 return {
@@ -276,27 +278,77 @@ export const resolvers = {
                 });
             }
         },
-        deleteGame: async (_, args) => {
-            let game = await Game.findById(args.id);
+        deleteGame: async (_, args, context) => {
+            try {
+                if (!context.user.userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        extensions: {
+                            code: "UNAUTHENTICATED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
 
-            if (game === undefined || game === null) {
-                throw new GraphQLError(`Game not found!`, {
+                if (context.user.role !== "admin") {
+                    throw new GraphQLError('You do not have authorization!', {
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                let game = await Game.findById(args.id);
+
+                if (game === undefined || game === null) {
+                    throw new GraphQLError(`Game not found!`, {
+                        extensions: {
+                            code: "NOT_FOUND",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                await Game.deleteOne({ _id: args.id });
+
+                return await Game.find({});
+            } catch (error) {
+                throw new GraphQLError(error.message, {
                     path: 'deleteGame',
-                    extensions: {
-                        code: "NOT_FOUND",
-                        http: {
-                            status: 401,
-                        },
-                    }
+                    extensions: error.extensions
                 });
             }
-
-            await Game.deleteOne({ _id: args.id });
-
-            return await Game.find({});
         },
-        addGame: async (_, args) => {
+        addGame: async (_, args, context) => {
             try {
+                if (!context.user.userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        extensions: {
+                            code: "UNAUTHENTICATED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                if (context.user.role !== "admin") {
+                    throw new GraphQLError('You do not have authorization!', {
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
                 let newGame = await Game.create(
                     {
                         title: args.newGame.title,
@@ -308,19 +360,36 @@ export const resolvers = {
 
                 return newGame;
             } catch (error) {
-                throw new GraphQLError('Error adding game', {
+                throw new GraphQLError(error.message, {
                     path: 'addGame',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    }
+                    extensions: error.extensions
                 });
             }
         },
-        updateGame: async (_, args) => {
+        updateGame: async (_, args, context) => {
             try {
+                if (!context.user.userId) {
+                    throw new GraphQLError('User not authenticated!', {
+                        extensions: {
+                            code: "UNAUTHENTICATED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
+                if (context.user.role !== "admin") {
+                    throw new GraphQLError('You do not have authorization!', {
+                        extensions: {
+                            code: "UNAUTHORIZED",
+                            http: {
+                                status: 401,
+                            },
+                        }
+                    });
+                }
+
                 let { id, editGame } = args;
 
                 let editParams = {};
@@ -348,7 +417,6 @@ export const resolvers = {
 
                 if (game === undefined || game === null) {
                     throw new GraphQLError(`Game not found!`, {
-                        path: 'updateGame',
                         extensions: {
                             code: "NOT_FOUND",
                             http: {
@@ -360,15 +428,9 @@ export const resolvers = {
 
                 return game;
             } catch (error) {
-                throw new GraphQLError('Error updating game', {
+                throw new GraphQLError(error.message, {
                     path: 'updateGame',
-                    extensions: {
-                        code: "INTERNAL_SERVER_ERROR",
-                        http: {
-                            status: 500,
-                        },
-                    },
-                    originalError: error
+                    extensions: error.extensions,
                 });
             }
         },

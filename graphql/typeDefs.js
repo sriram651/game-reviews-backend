@@ -1,6 +1,6 @@
 export const typeDefs = `#graphql
     type Game {
-        id: ID!
+        _id: ID!
         title: String!
         platform: [String!]!
         releasedYear: Int!
@@ -21,12 +21,14 @@ export const typeDefs = `#graphql
         userName: String!
         email: String!
         createdAt: String!
+        role: String!
     }
     type UserResponse {
         id: ID!
         userName: String!
         email: String!
         createdAt: String!
+        role: String!
         token: String!
     }
 
