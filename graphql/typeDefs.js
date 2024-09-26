@@ -1,6 +1,6 @@
 export const typeDefs = `#graphql
     type Game {
-        _id: ID!
+        id: ID!
         title: String!
         platform: [String!]!
         releasedYear: Int!
