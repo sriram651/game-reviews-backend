@@ -8,7 +8,14 @@ export const resolvers = {
     Query: {
         getAllGames: async (_, args) => {
             try {
-                let { search = "", platform = [], genre = [], yearRange = [] } = args;
+                let {
+                    search = "",
+                    platform = [],
+                    genre = [],
+                    yearRange = [],
+                    sortBy = "releasedYear",
+                    sortOrder = "DESC"
+                } = args;
 
                 let matchConditions = {
                     title: { $regex: search, $options: 'i' }
@@ -22,7 +29,7 @@ export const resolvers = {
                     matchConditions.genre = { $in: genre };
                 }
 
-                if (yearRange) {
+                if (yearRange.length > 0) {
                     let minYear = yearRange[0];
                     let maxYear = yearRange[0];
 
@@ -39,6 +46,11 @@ export const resolvers = {
                 let aggregateQuery = [
                     {
                         $match: matchConditions
+                    },
+                    {
+                        $sort: {
+                            [sortBy]: sortOrder === "ASC" ? 1 : -1
+                        }
                     }
                 ];
 

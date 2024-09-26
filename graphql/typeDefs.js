@@ -64,10 +64,20 @@ export const typeDefs = `#graphql
         SURVIVAL
     }
 
+    enum GameSortBy {
+        title
+        releasedYear
+    }
+
+    enum SortOrder {
+        ASC
+        DESC
+    }
+
     type Query {
         reviews: [Review]
         reviewById(id: ID!): Review
-        getAllGames(search: String, platform: [Platform], genre: [Genre], yearRange: [Int!]): [Game]
+        getAllGames(search: String, platform: [Platform], genre: [Genre], yearRange: [Int!], sortBy: GameSortBy, sortOrder: SortOrder): [Game]
         getGameById(id: ID!): Game
         getReviewsByUser: [Review]
     }
