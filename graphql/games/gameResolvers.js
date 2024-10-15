@@ -1,5 +1,6 @@
 import { GraphQLError } from "graphql";
 import Game from "../../models/Game.js";
+import Review from "../../models/Review.js";
 
 const getAllGames = async (_, args) => {
     try {
@@ -246,4 +247,27 @@ export const gameMutations = {
     addGame,
     updateGame,
     deleteGame,
+};
+
+export const gameNestedQueries = {
+    Game: {
+        reviews: async (parent) => {
+            try {
+                let reviews = Review.find({ gameId: parent._id });
+
+                return reviews;
+            } catch (error) {
+                throw new GraphQLError('Error fetching reviews', {
+                    path: 'game.reviews',
+                    extensions: {
+                        code: "INTERNAL_SERVER_ERROR",
+                        http: {
+                            status: 500,
+                        },
+                    },
+                    originalError: error
+                });
+            }
+        }
+    },
 };
