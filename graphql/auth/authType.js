@@ -1,4 +1,9 @@
 export const authTypes = `#graphql
+    type ServerPong {
+        success: Boolean!
+        message: String!
+    }
+
     input NewUserInput {
         userName: String!
         email: String!
@@ -10,6 +15,10 @@ export const authTypes = `#graphql
         email: String!
         password: String!
     }
+`;
+
+export const authQueries = `#graphql
+    pingServer: ServerPong!
 `;
 
 export const authMutations = `#graphql

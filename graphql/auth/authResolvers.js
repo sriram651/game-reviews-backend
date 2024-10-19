@@ -2,6 +2,13 @@ import { GraphQLError } from "graphql";
 import User from "../../models/User.js";
 import { comparePassword, createToken, encryptPassword } from "../../utils/userAuth.js";
 
+const pingServer = async () => {
+    return {
+        success: true,
+        message: 'Pong!',
+    };
+};
+
 const registerNewUser = async (_, args) => {
     try {
         let { userName, email, password, role } = args.newUser;
@@ -125,6 +132,10 @@ const loginUser = async (_, args) => {
             extensions: error.extensions
         });
     }
+};
+
+export const authQueries = {
+    pingServer,
 };
 
 export const authMutations = {
