@@ -1,12 +1,17 @@
 export const gameType = `#graphql
     type Game {
-        id: ID!
+        _id: ID!
         title: String!
+        description: String!
         platform: [String!]!
         releasedYear: Int!
+        coverImage: String!
         genre: [String!]!
         reviews: [Review!]
-        createdAt: String!
+        releaseDate: String!
+        manufacturerName: String!
+        developer: String!
+        createdAt: String
     }
 
     enum Platform {

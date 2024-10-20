@@ -1,7 +1,14 @@
 import { Schema, model } from "mongoose";
 
 const gameSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+    },
     title: {
+        type: String,
+        required: true,
+    },
+    description: {
         type: String,
         required: true,
     },
@@ -13,8 +20,24 @@ const gameSchema = new Schema({
         type: Number,
         required: true,
     },
+    coverImage: {
+        type: String,
+        required: true,
+    },
     genre: {
         type: [String],
+        required: true,
+    },
+    releaseDate: {
+        type: Date,
+        required: true,
+    },
+    manufacturerName: {
+        type: String,
+        required: true,
+    },
+    developer: {
+        type: String,
         required: true,
     },
     createdAt: {

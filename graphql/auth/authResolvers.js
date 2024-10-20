@@ -93,9 +93,9 @@ const loginUser = async (_, args) => {
             throw new GraphQLError('Email not registered!', {
                 path: 'loginUser',
                 extensions: {
-                    code: "BAD_REQUEST",
+                    code: "NOT_FOUND",
                     http: {
-                        status: 400,
+                        status: 204,
                     },
                 }
             });
