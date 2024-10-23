@@ -250,6 +250,25 @@ export const reviewMutations = {
 
 export const reviewNestedQueries = {
     Review: {
+        userVoteDetails: async (parent, _, { user }) => {
+            if (!user) {
+                return false;
+            }
+
+            const { userId } = user;
+
+            let isVoted = parent.voters.some((voter) => voter.userId === userId);
+            let voteType = parent.voters.find((voter) => voter.userId === userId)?.voteType;
+
+            let isDownVoted = isVoted && voteType === "DOWN";
+            let isUpVoted = isVoted && voteType === "UP";
+
+            return {
+                isVoted,
+                isDownVoted,
+                isUpVoted
+            };
+        },
         game: async (parent) => {
             try {
                 let game = await Game.findById(parent.gameId);

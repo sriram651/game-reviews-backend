@@ -10,6 +10,7 @@ let mongoUri = process.env.MONGODB_URI;
 
 // Server setup
 const server = new ApolloServer({
+    introspection: true,
     typeDefs: typeDefs,
     resolvers: resolvers,
 });

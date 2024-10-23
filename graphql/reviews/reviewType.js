@@ -9,11 +9,17 @@ export const reviewType = `#graphql
         voters: [ReviewVoter!]
         game: Game
         user: User
+        userVoteDetails: UserVoteDetails!
         createdAt: String!
     }
     type ReviewVoter {
         userId: ID!
         voteType: VoteType!
+    }
+    type UserVoteDetails {
+        isVoted: Boolean!
+        isDownVoted: Boolean!
+        isUpVoted: Boolean!
     }
 
     enum VoteType {
