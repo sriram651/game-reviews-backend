@@ -253,7 +253,7 @@ export const gameNestedQueries = {
     Game: {
         reviews: async (parent) => {
             try {
-                let reviews = Review.find({ gameId: parent._id });
+                let reviews = Review.find({ gameId: parent._id }).sort({ createdAt: -1 });
 
                 return reviews;
             } catch (error) {
