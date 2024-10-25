@@ -21,7 +21,7 @@ const registerNewUser = async (_, args) => {
                 extensions: {
                     code: "BAD_REQUEST",
                     http: {
-                        status: 400,
+                        status: 201,
                     },
                 }
             });
@@ -35,7 +35,7 @@ const registerNewUser = async (_, args) => {
                 extensions: {
                     code: "BAD_REQUEST",
                     http: {
-                        status: 400,
+                        status: 201,
                     },
                 }
             });
@@ -47,7 +47,7 @@ const registerNewUser = async (_, args) => {
                 extensions: {
                     code: "BAD_REQUEST",
                     http: {
-                        status: 400,
+                        status: 201,
                     },
                 }
             });
@@ -95,7 +95,7 @@ const loginUser = async (_, args) => {
                 extensions: {
                     code: "NOT_FOUND",
                     http: {
-                        status: 204,
+                        status: 201,
                     },
                 }
             });
@@ -109,7 +109,7 @@ const loginUser = async (_, args) => {
                 extensions: {
                     code: "BAD_REQUEST",
                     http: {
-                        status: 400,
+                        status: 201,
                     },
                 }
             });
