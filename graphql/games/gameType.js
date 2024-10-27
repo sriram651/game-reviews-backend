@@ -8,6 +8,7 @@ export const gameType = `#graphql
         coverImage: String!
         genre: [String!]!
         reviews: [Review!]
+        averageRating: Float!
         releaseDate: String!
         manufacturerName: String!
         developer: String!

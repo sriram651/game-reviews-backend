@@ -268,6 +268,49 @@ export const gameNestedQueries = {
                     originalError: error
                 });
             }
-        }
+        },
+        averageRating: async (parent) => {
+            try {
+                let aggregateQuery = [
+                    {
+                        $match: {
+                            gameId: parent._id.toString()
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$gameId",
+                            totalRating: {
+                                $sum: "$rating"
+                            },
+                            count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            averageRating: {
+                                $divide: ["$totalRating", "$count"]
+                            }
+                        }
+                    }
+                ];
+
+                let aggregateResult = await Review.aggregate(aggregateQuery);
+
+                if (aggregateResult.length === 0) {
+                    return 0;
+                }
+
+                let averageRating = aggregateResult[0].averageRating?.toFixed(2);
+
+                return averageRating;
+            } catch (error) {
+                throw new GraphQLError('Error fetching average rating', {
+                    path: 'game.averageRating',
+                    extensions: error.extensions
+                });
+            }
+        },
     },
 };
