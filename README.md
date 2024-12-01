@@ -45,7 +45,7 @@ Before running the application, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone [<repository-url>](https://github.com/sriram651/graphql-server.git)
+   git clone https://github.com/sriram651/game-reviews-backend.git
    ```
 2. Install Dependencies:
    ```bash
