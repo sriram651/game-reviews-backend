@@ -37,7 +37,7 @@ This repository contains the backend for a game review application, built using 
 
 Before running the application, ensure you have the following installed:
 
-- **Node.js** (v14 or above)
+- **Node.js** (v18 or above)
 - **npm** or **yarn** (package managers)
 - **MongoDB** (Local or cloud instance)
 
